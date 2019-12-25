@@ -43,18 +43,41 @@ const followersArray = [
 	"dswhitely1"
 ];
 
-followersArray.forEach(user => {
-	axios
-		.get(`https://api.github.com/users/${user}`)
-		.then(response => {
-			// console.log(response);
-			let cards = document.querySelector(".cards");
-			cards.appendChild(cardCreator(response));
+// followersArray.forEach(user => {
+// 	axios
+// 		.get(`https://api.github.com/users/${user}`)
+// 		.then(response => {
+// 			// console.log(response);
+// 			let cards = document.querySelector(".cards");
+// 			cards.appendChild(cardCreator(response));
+// 		})
+// 		.catch(err => {
+// 			console.log("Error", err);
+// 		});
+// });
+
+const createFollowersCards = user => {
+	return axios
+		.get(`https://api.github.com/users/${user}/followers`)
+		.then(res => {
+			console.log(res.data);
+			return res.data;
 		})
-		.catch(err => {
-			console.log("Error", err);
-		});
-});
+		.then(followersArray => {
+			followersArray.forEach(follower => {
+				return axios
+					.get(`https://api.github.com/users/${follower.login}`)
+					.then(res => {
+						console.log(res);
+						let cards = document.querySelector(".cards");
+						cards.appendChild(cardCreator(res));
+					})
+					.catch(err => console.log(err));
+			});
+		})
+		.catch(err => console.log(err));
+};
+createFollowersCards("SebastianGarces");
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
